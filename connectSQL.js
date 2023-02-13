@@ -15,7 +15,8 @@ module.exports = {
       user: USER,
       password: PASSWORD,
       database: DATABASE,
-      port: PORT
+      port: PORT 
     }
   }
 }
+ 

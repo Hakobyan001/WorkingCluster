@@ -1,166 +1,121 @@
 
+// Modules from this project
+const cluster = require('cluster');
+const UrlService = require('../service/url.service');
+const Data = require('../models/urls.model');
+const Count = require('../models/urls.model');
+
+const { option } = require("../../connectSQL");
+const knex = require('knex')(option);
+
+const numCPUs = require('os').cpus().length;
+
+let start = 0;
+let end = 0;
+let worker = [];
+
+async function isPrimary() {
+
+  if (cluster.isPrimary) {
+
+    const step = await Count.getLimit();
+    const limit = await Count.getLimit();
 
 
-// const express = require("express")
-// const Api = require('../api/urls.api');
-
-// const app = express()
-
-// const PORT = process.env.PORT || 8090
-
-// app.use(express.json())
-
-// app.use('/api/v1', Api);
+    const links = await Data.getUrls();
 
 
-// // Modules from this project
-// const  cluster = require('cluster');
-// const { option } = require("../../connectSQL");
-// const knex = require('knex')(option);
+    for (let i = 0; i < numCPUs; i += 1) {
+      worker.push(cluster.fork());
+      start = step * i;
+      end = start + step;
 
-// const UrlService = require( '../service/url.service');
-
-// const UrlsModel = require('../models/urls.model')
-
-// // import { UrlsModel } from '../models';
+      worker[i].send(links.slice(start, end));
+      worker[i].on('message', async (msg) => {
+              for (let int in msg.data[0].urlStatus) {
 
 
+                  const insertStatus = await knex
+                      .from('urls')
+                      .update({status: msg.data[0].status[int]})
+                      .where('external_urls', '=', msg.data[0].urlStatus[int]);
+
+                  console.log(insertStatus);
 
 
-// const numCPUs = require('os').cpus().length;
-// console.log(numCPUs);
+          }
 
-// let start = 0;
-// let end = 0;
-// const step = 20;
-// let worker = [];
-// const limit = 320;
+            for (let ind in msg.data[1].urlRobot) {
 
-// async function isPrimary() {
-//   if (cluster.isPrimary) {
-   
-//     const net = require('net');
+                const insertRobot = await knex
+                    .from('urls')
+                    .update({robot: 'noindexable'})
+                    .where('external_urls', '=', msg.data[1].urlRobot[ind])
 
-// const client = new net.Socket();
-// client.connect(PORT, 'localhost', async function() {
-//   console.log('Connected');
-//   app.listen(PORT, () => {
-//     console.log(`Server is connected on port ${PORT}`);
-//   });
-//   const links = await UrlsModel.getUrls();
-//   console.log(links,878787878787);
-//   client.write('Hello, server! Love, Client.');
-// });
+                console.log(insertRobot);
+            }
 
-// client.on('error', function(err) {
-//   if (err.code === 'EPIPE') {
-//     console.error('Got an EPIPE error while writing to the socket');
-//   // } else {
-//   //   console.error(err);
-//   // }
-//   }
-// });
-//     // console.log(links,8787887878);
-//     for (let i = 0; i < numCPUs; i += 1) {
-//       worker.push(cluster.fork());
-//       start = step * i;
-//       end = start + step;
+      });
 
-//       // worker[i].send(links.slice(start, end));
+      worker[i].on('error', (error) => {
+        console.log(error);
+      });
+    }
 
-//       worker[i].on('message', async (msg) => {
-//         console.log(msg);
-//         const informationalResponses = await knex
-//           .from('links')
-//           .whereIn('id', msg.data[0])
-//           .update({ status: 'informationalResponses' });
+    cluster.on('exit', async (currWorker) => {
+      start = end;
+      end = start + step;
 
-//         console.log('Table updated', informationalResponses);
+      if (end <= limit) {
+        worker = worker.filter((w) => w.id !== currWorker.id);
 
-//         const successfulResponses = await knex
-//           .from('links')
-//           .whereIn('id', msg.data[1])
-//           .update({ status: 'successfulResponses' });
+        worker.push(cluster.fork());
 
-//         console.log('Table updated', successfulResponses);
+        const chunk = links.slice(start, end);
+        console.log('INIT start, end => ', start, end);
+        worker[numCPUs - 1].send(chunk);
 
-//         const redirectionMessages = await knex
-//           .from('links')
-//           .whereIn('id', msg.data[2])
-//           .update({ status: 'redirectionMessages' });
+        worker[numCPUs - 1].on('message', async (msg) => {
+                // console.log(12)
+                for (let int in msg.data[0].urlStatus) {
 
-//         console.log('Table updated', redirectionMessages);
+                    const index1 = msg.data[0].urlStatus[int].indexOf('?');
+                    alfa.push(msg.data[0].urlStatus[int].slice(0, index1))
 
-//         const clientErrorResponses = await knex
-//           .from('links')
-//           .whereIn('id', msg.data[3])
-//           .update({ status: 'clientErrorResponses' });
+                    const insertStatus = await knex
+                        .from('urls')
+                        .update({status: msg.data[0].status[int]})
+                        .where('external_urls', '=', alfa[int])
 
-//         console.log('Table updated', clientErrorResponses);
-//       });
+                    console.log(insertStatus);
 
-//       worker[i].on('error', (error) => {
-//         console.log(error);
-//       });
-//     }
+                }
+                for (let ind in msg.data[1].urlRobot) {
+                    const index2 = msg.data[1].urlRobot[ind].indexOf('?');
+                    betta.push(msg.data[1].urlRobot[ind].slice(0, index2))
+                    const insertRobot = await knex
+                        .from('urls')
+                        .update({robot: 'noindexable'})
+                        .where('external_urls', '=', betta[ind])
 
-//     cluster.on('exit', async (currWorker) => {
-//       start = end;
-//       end = start + step;
+                    console.log(insertRobot);
+                }
 
-//       if (end <= limit) {
-//         worker = worker.filter((w) => w.id !== currWorker.id);
+        });
 
-//         worker.push(cluster.fork());
+        worker[numCPUs - 1].on('error', (error) => {
+          console.log(error);
+        });
+      }
 
-//         const chunk = links.slice(start, end);
-//         console.log('INIT start, end => ', start, end);
-//         worker[numCPUs - 1].send(chunk);
+    });
+  } else {
+    process.on('message', async (msg) => {
+        process.send({ data: await UrlService.checkUrls(msg) });
+        process.kill(process.pid);
+    });
 
-//         worker[numCPUs - 1].on('message', async (msg) => {
-//           const informationalResponses = await knex
-//             .from('links')
-//             .whereIn('id', msg.data[0])
-//             .update({ status: 'informationalResponses' });
+  }
+}
 
-//           console.log('Table updated', informationalResponses);
-
-//           const successfulResponses = await knex
-//             .from('links')
-//             .whereIn('id', msg.data[1])
-//             .update({ status: 'successfulResponses' });
-
-//           console.log('Table updated', successfulResponses);
-
-//           const redirectionMessages = await knex
-//             .from('links')
-//             .whereIn('id', msg.data[2])
-//             .update({ status: 'redirectionMessages' });
-
-//           console.log('Table updated', redirectionMessages);
-
-//           const clientErrorResponses = await knex
-//             .from('links')
-//             .whereIn('id', msg.data[3])
-//             .update({ status: 'clientErrorResponses' });
-
-//           console.log('Table updated', clientErrorResponses);
-//         });
-
-//         worker[numCPUs - 1].on('error', (error) => {
-//           console.log(error);
-//         });
-//       }
-//     });
-//   } else {
-//     process.on('message', async (msg) => {
-//       process.send({ data: await UrlService.checkUrls(msg) });
-//       process.kill(process.pid);
-//     });
-//   }
-//   app.listen(PORT, () => {
-//     console.log(`Server is connected on port ${PORT}`);
-// });
-// }
-
-// isPrimary();
+isPrimary()

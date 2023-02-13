@@ -8,4 +8,5 @@ module.exports = {
     DATABASE: process.env.PSQL_DATABASE,
     PASSWORD: process.env.PSQL_PASSWORD,
   }
-}
+  
+};

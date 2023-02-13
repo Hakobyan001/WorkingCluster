@@ -9,6 +9,11 @@ app.use(express.json())
 
 app.use('/api/v1', Api);
 
-app.listen(PORT, () => {
+
+
+    app.listen(PORT, () => {
     console.log(`Server is connected on port ${PORT}`);
-});
+})
+
+
+module.exports = app

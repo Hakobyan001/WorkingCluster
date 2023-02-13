@@ -1,19 +1,24 @@
 {
-  "name": "f",
+  "name": "Links GD",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "nodemon  server.js"
+    "watch": "nodemon  src/Clusterization/cluster.js ",
+    "start": "nodemon server.js",
+    "dev": "nodemon src/Clusterization/linksCluster.js",
+    "change": "nodemon src/Clusterization/changeCluster.js "
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "async": "^3.2.4",
-    "axios": "^1.1.3",
+    "axios": "^1.3.2",
+    "child_process": "^1.0.2",
     "cluster": "^0.7.7",
     "dotenv": "^16.0.3",
     "esm": "^3.2.25",
@@ -24,13 +29,19 @@
     "knex": "^2.3.0",
     "net": "^1.0.2",
     "node-abort-controller": "^3.0.1",
+    "node-cron": "^3.0.2",
     "node-fetch": "^2.6.7",
     "node-worker-threads-pool": "^1.5.1",
     "nodemon": "^2.0.20",
+    "npm-run-all": "^4.1.5",
     "os": "^0.1.2",
     "path": "^0.12.7",
     "pg": "^8.8.0",
     "re": "^0.1.4",
+    "save-dev": "^0.0.1-security",
     "worker-thread": "^1.1.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
   }
 }
