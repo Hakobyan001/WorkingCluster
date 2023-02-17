@@ -1,14 +1,16 @@
 const express = require("express")
 
-const { getAllUrls, postLinks, postExternals, test,redirected,checker , freeRequest} = require('../controllers/urls.controller');
+const {  test,addLinks,deleteUrls ,getLiveUrls,getCrawled, fullOnlyStatus,getFailed, getCrawledById, getCrawledLinksCountById} = require('../controllers/urls.controller');
 const router = express.Router();
 
-router.get("/urls/all", getAllUrls);
-router.post('/urls/links', postLinks);
-router.post('/urls/externals', postExternals);
+router.get('/urls/live',getLiveUrls)
+router.post('/urls/links', addLinks);
 router.post('/urls/test',test);
-router.post('/urls/redirected',redirected);
-router.post('/urls/checker',checker);
-router.post('/urls/freeRequest', freeRequest)
+router.delete('/urls',deleteUrls);
+router.get('/urls/crawled',getCrawled)
+router.get('/urls/crawled/:id',getCrawledById)
+router.get('/urls/crawled/count/links/:id',getCrawledLinksCountById)
+router.get('/urls/getFailed',getFailed)
+router.post('/urls/freeRequest', fullOnlyStatus)
 
 module.exports = router;

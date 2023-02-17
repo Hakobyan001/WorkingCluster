@@ -20,6 +20,7 @@ let informationalResponses;
 
 async function isPrimary() {
   if (cluster.isPrimary) {
+
     const limit = await Change.getNull()
     
     const step = limit;
@@ -37,23 +38,23 @@ async function isPrimary() {
       worker[i].on('message', async (msg) => {
 
 
-console.log(msg.data);
+// console.log(msg.data);
         const val = Change.changeing().then(async (elem) => {
 if(msg.data[1].length > 0){
+  
           for (let r = 0; r < elem[1].length; r++) {
-
+if(elem[0][r].external_urls === msg.data[3][r] && (elem[0][r].rel !== msg.data[1][r]|| elem[1][r].keyword !== msg.data[2][r])){
             informationalResponses = await knex
               .from('urls')
-              .whereIn('id', msg.data[0])
+              .where('external_urls','=', elem[0][r].external_urls)
+              
               .update({ changeing: {"oldRel": `"${elem[0][r].rel}"` , "newRel": `"${msg.data[1][r]}"` , "oldKeyword":`"${elem[1][r].keyword}"` , "newKeyword":`"${msg.data[2][r]}"` }})
               .update({updated_at:new Date()})
+}
            }  
         }
       }
         )
-
-
-
 
       });
 
@@ -78,17 +79,18 @@ if(msg.data[1].length > 0){
 
           const val = Change.changeing().then(async (elem) => {
             if(msg.data[1].length > 0){
-
-            for (let r = 0; r < elem[1].length; r++) {
-  
-              informationalResponses = await knex
-                .from('urls')
-                .whereIn('id', msg.data[0])
-                .update({ changeing: {"oldRel": `"${elem[0][r].rel}"` , "newRel": `"${msg.data[1][r]}"` , "oldKeyword":`"${elem[1][r].keyword}"` , "newKeyword":`"${msg.data[2][r]}"` }})
-  
+              
+                      for (let r = 0; r < elem[1].length; r++) {
+            if(elem[0][r].external_urls === msg.data[3][r] && (elem[0][r].rel !== msg.data[1][r] || elem[1][r].keyword !== msg.data[2][r])){
+                        informationalResponses = await knex
+                          .from('urls')
+                          .where('external_urls','=', elem[0][r].external_urls)
+                          .update({ changeing: {"oldRel": `"${elem[0][r].rel}"` , "newRel": `"${msg.data[1][r]}"` , "oldKeyword":`"${elem[1][r].keyword}"` , "newKeyword":`"${msg.data[2][r]}"` }})
+                          .update({updated_at:new Date()})
             }
-          }
-        }
+                       }  
+                    }
+                  }
           )
 
         });
@@ -106,19 +108,6 @@ if(msg.data[1].length > 0){
 
     });
 
-    const express = require("express")
-    const Api = require('../api/urls.api');
-
-    const app = express()
-
-    const PORT = process.env.PORT || 8989
-    app.use(express.json())
-
-    app.use('/api/v1', Api);
-
-    app.listen(PORT, () => {
-      console.log(`Server is connected on port ${PORT}`);
-    })
 
   }
   

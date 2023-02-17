@@ -4,6 +4,7 @@ const axios = require("axios").default;
 const DecodeService = require('./decoding.entities.js');
 const UrlService = require('./url.service')
 const Insert = require("../inserttable/inserttable")
+const urlsModel = require('../models/urls.model')
 
 class LinkService {
   static async test(furls) {
@@ -131,9 +132,9 @@ class LinkService {
         }
       }
 
-         const infoLinks = await Insert.insertTable(info);
+         const infoLinks = await urlsModel.insertUrls(hrefValues);
          const infoExternals = await UrlService.checkUrls(info);
-
+    console.log(info,"ssss");
     return info;
   }
 }  
