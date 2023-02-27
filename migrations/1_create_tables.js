@@ -19,6 +19,8 @@ function up(pg) {
         table.integer('user_id');
         table.dateTime('created_at');
         table.dateTime('updated_at');
+        table.enum('change',['active', 'inactive']).default('active')
+
       })
       .createTable('urls', (table) => {
         table.increments('id').primary();
@@ -34,6 +36,8 @@ function up(pg) {
         table.integer('links_id');
         table.dateTime('created_at');
         table.dateTime('updated_at');
+        table.enum('change',['active', 'inactive']).default('active')
+
       })
       .createTable('changes', (table) => {
         table.integer('campaign_id');

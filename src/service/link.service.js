@@ -95,7 +95,6 @@ class LinkService {
       title.push(htmlOfLinks[i].match(titleRegex));
       robots.push(String(htmlOfLinks[i].match(robotsRegex)));
       favicons.push(htmlOfLinks[i].match(faviconRegex));
-
           //Pushing Information about external links
         for (let x = 0; x < hrefValues.length; x++) {
               externalInfo[i].push(JSON.stringify({
@@ -131,11 +130,8 @@ class LinkService {
           return "Problem"
         }
       }
-
          const infoLinks = await urlsModel.insertUrls(hrefValues);
-         const infoExternals = await UrlService.checkUrls(info);
-    console.log(info,"ssss");
-    return info;
+         return info;
   }
 }  
 

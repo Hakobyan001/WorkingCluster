@@ -7,7 +7,7 @@ const { changeing } = require("../models/urls.model");
 const knex = require('knex')(option);
 
 //inserting table , first subprocess
-let campaign_id = 0;
+// let campaign_id = 0;
 
 class Insert {
 
@@ -17,21 +17,24 @@ class Insert {
         const links = Object.keys(info)[0]
         const alfa = Object.values(info)
         console.log(alfa);
+
         // console.log(Object.keys(alfa));
 
         let linksDatas;
         let urlsDatas;
         for (let ur = 0; ur < alfa.length; ur++) {
-            if(ur === alfa.length - 1) {
-                campaign_id = campaign_id + 1           
-            }
+            // if(ur === 0) {
+            //     campaign_id = campaign_id + 1           
+            // }
+
+            // console.log(campaign_id);
             linksDatas = [
-                { urls: links, robot_tag: alfa[ur].robot_tag, title: alfa[ur].title, favicon: alfa[ur].favicon, status: alfa[ur].status, created_at: new Date(),campaign_id: campaign_id }
+                { urls: links, robot_tag: alfa[ur].robot_tag, title: alfa[ur].title, favicon: alfa[ur].favicon, status: alfa[ur].status, created_at: new Date(),campaign_id: alfa[ur].campaign_id, user_id: alfa[ur].user_id }
             ]
 
             //insert Unique data
 
-            const alfaAboutJoinsLinks = await knex('links').insert(linksDatas).onConflict('urls').merge().returning(['urls', 'id']);
+            const alfaAboutJoinsLinks = await knex('links').insert(linksDatas).returning(['urls', 'id']);
 
             let insertUrls = alfa[ur].externalInfo
 
@@ -47,9 +50,10 @@ class Insert {
                         created_at: new Date(),
                         links_id: alfaAboutJoinsLinks[0].id,
                         main_link: alfaAboutJoinsLinks[0].urls,
-                        robot: "indexable",
-                        status: 200,
-                        campaign_id:campaign_id
+                        robot_tag: insertUrls[lin].robot_tag,
+                        status: insertUrls[lin].status,
+                        campaign_id:alfa[ur].campaign_id,
+                        user_id: alfa[ur].user_id
 
 
                     }

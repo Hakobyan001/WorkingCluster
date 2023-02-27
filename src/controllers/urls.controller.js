@@ -11,6 +11,16 @@ const OnlyStatusChecker = require('../service/mainLinks.redirect')
 
 class UrlsController {
 
+  static async addChange(req, res, next) {
+    try {
+      const { campaign_id } = req.body
+      const urls = await UrlsModel.addChange(campaign_id);
+      res.send('success')
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async test(req, res, next) {
     try {
       const val = req.body;
