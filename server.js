@@ -9,6 +9,7 @@ app.use(express.json())
 
 app.use('/api/v1', Api);
 
+app.use(cors())
 
 
     app.listen(PORT, () => {
