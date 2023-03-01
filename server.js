@@ -1,6 +1,6 @@
 const express = require("express")
 const Api = require('./src/api/urls.api');
-
+const cors = require('cors')
 const app = express()
 
 const PORT = process.env.PORT || 8080
