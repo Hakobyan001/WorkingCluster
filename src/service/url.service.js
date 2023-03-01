@@ -7,6 +7,7 @@ let info = {url:[],robot_tag:[],status:[]};
 
 class UrlService {
   static async checkUrls(domain) {
+    console.log(domain,"domain");
     let alfa = [];
     let unexts = [];
     for(let k = 0; k<domain.length; k++) {
@@ -64,6 +65,7 @@ class UrlService {
             const texts = result.value.value;
             success = result.value.value.status
             externalStatus.push(success);
+            console.log(result.value.value.url,"url");
             information.push({
               url: result.value.value.url,
               text: texts

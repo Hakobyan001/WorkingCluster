@@ -33,21 +33,18 @@ class UrlsController {
          info2 = await CheckerLinks.linkTest(url[e]);
           data.push(info2) 
       }
-      console.log(data,"aaa");
       const worker = child_process.fork('src/Clusterization/cluster.js')
         worker.on('message', async function (msg) {
           for(let i = 0; i < url.length; i++ ){
           var extrs = data[i][0].externalInfo;
-          console.log(extrs,"hasanq");
           let arr3 = extrs
             .filter(obj1 => msg.some(obj2 => obj2.url === obj1.url))
             .map(obj1 => {
               let obj2 = msg.find(obj => obj.url === obj1.url);
               return { ...obj1, ...obj2 };
             });
-  data[i][0].externalInfo = arr3
+          data[i][0].externalInfo = arr3
           }
-          console.log(data,"data");
           res.send(data)
         })
         
